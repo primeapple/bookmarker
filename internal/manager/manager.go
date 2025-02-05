@@ -43,6 +43,8 @@ func (m *Manager) handleAdd(args []string) error {
 	}
 
 	bm.Add(args[0], workingDirectory)
+    m.store.Save(bm)
+
 	return nil
 }
 
