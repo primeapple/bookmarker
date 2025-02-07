@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/primeapple/bookmarker/internal/storage"
@@ -35,7 +36,11 @@ func (m *Manager) handleAdd(args []string) error {
 		return fmt.Errorf("Wrong number of arguments given")
 	}
 
-	bm := m.store.Load()
+	bm, err := m.store.Load()
+    if (err != nil) {
+        log.Printf("error when loading the bookmarks: %v", err)
+        panic("Unable to load the bookmarks. Please check permission and filespace")
+    }
 
 	workingDirectory, err := os.Getwd()
 	if err != nil {
@@ -49,7 +54,12 @@ func (m *Manager) handleAdd(args []string) error {
 }
 
 func (m *Manager) handleGoto(name string) error {
-	bm := m.store.Load()
+	bm, err := m.store.Load()
+    if (err != nil) {
+        log.Printf("error when loading the bookmarks: %v", err)
+        panic("Unable to load the bookmarks. Please check permission and filespace")
+    }
+
     path, err := bm.Get(name)
     if err != nil {
         return err

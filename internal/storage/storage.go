@@ -9,11 +9,13 @@ import (
 	"github.com/primeapple/bookmarker/internal/bookmarks"
 )
 
-const BOOKMARKER_FILENAME = "bookmarker.json"
+const BookmarkerFilename = "bookmarker.json"
+const PermissionUserReadWrite = 0600
+const PersmissionUserAllRestRead = 0711
 
 type Storage interface {
-	Load() *bookmarks.Bookmarks
-	Save(*bookmarks.Bookmarks)
+	Load() (*bookmarks.Bookmarks, error)
+	Save(*bookmarks.Bookmarks) error
 }
 
 type JSONStorage struct{}
@@ -22,15 +24,18 @@ func NewJSONStorage() *JSONStorage {
 	return &JSONStorage{}
 }
 
-func (store *JSONStorage) Load() *bookmarks.Bookmarks {
-	path := getStorageFilePath()
+func (store *JSONStorage) Load() (*bookmarks.Bookmarks, error) {
+	path, err := getStorageFilePath()
+    if err != nil {
+        return nil, fmt.Errorf("getting storage file dir: %w", err)
+    }
+
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
-		newBookmarks := bookmarks.NewBookmarks()
-		return newBookmarks
+		return bookmarks.NewBookmarks(), nil
 	}
 	if err != nil {
-		panic(fmt.Sprintf("can't read bookmarks file: %w", err))
+		return nil, fmt.Errorf("can't read bookmarks file: %w", err)
 	}
 
 	var result bookmarks.Bookmarks
@@ -38,45 +43,61 @@ func (store *JSONStorage) Load() *bookmarks.Bookmarks {
 		panic(fmt.Sprintf("File %v was not a valid json: %w", data, err))
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (store *JSONStorage) Save(bm *bookmarks.Bookmarks) {
+func (store *JSONStorage) Save(bm *bookmarks.Bookmarks) error {
+    if (bm == nil) {
+        panic("passed `nil` as bookmarks")
+    }
+
 	data, err := json.MarshalIndent(bm, "", "\t")
 	if err != nil {
-		panic(fmt.Sprintf("Could not convert bookmarks %v to json %w", bm, err))
+		return fmt.Errorf("Could not convert bookmarks %v to json %w", bm, err)
 	}
 
-    store.createDirIfNotExists()
+    if err := store.createDirIfNotExists(); err != nil {
+		return fmt.Errorf("creating storage directory: %w", err)
+	}
 
-    path := getStorageFilePath()
-	err = os.WriteFile(path, data, 0600)
+	path, err := getStorageFilePath()
+    if err := os.WriteFile(path, data, PermissionUserReadWrite); err != nil {
+		return fmt.Errorf("Could not write bookmarker file to %q , %w", path, err)
+	}
+
+    return nil
+}
+
+func (store *JSONStorage) createDirIfNotExists() error {
+	path, err := getStorageFileDir()
+    if err != nil {
+        return fmt.Errorf("getting storage file dir: %w", err)
+    }
+
+	err = os.MkdirAll(path, PersmissionUserAllRestRead)
 	if err != nil {
-		panic(fmt.Sprintf("Could not write bookmarker file to %q , %w", path, err))
-	}
+        return fmt.Errorf("creating dir %q: %w", path, err)
+    }
+    return nil
 }
 
-func (store *JSONStorage) createDirIfNotExists() {
-	path := getStorageFileDir()
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(path, 0711)
-	}
-}
-
-func getStorageFileDir() string {
+func getStorageFileDir() (string, error) {
 	if dataHome := os.Getenv("XDG_DATA_HOME"); dataHome != "" {
-		return filepath.Join(dataHome, "bookmarker")
+		return filepath.Join(dataHome, "bookmarker"), nil
 	}
 
 	baseDir, err := os.UserHomeDir()
 	if err != nil {
-		baseDir = os.Getenv("HOME")
+        return "", fmt.Errorf("homedir not found: %w", err)
 	}
 
-	return filepath.Join(baseDir, ".local", "share", "bookmarker")
+	return filepath.Join(baseDir, ".local", "share", "bookmarker"), nil
 }
 
-func getStorageFilePath() string {
-	baseDir := getStorageFileDir()
-	return filepath.Join(baseDir, BOOKMARKER_FILENAME)
+func getStorageFilePath() (string, error) {
+	baseDir, err := getStorageFileDir()
+    if err != nil {
+        return "", err
+    }
+	return filepath.Join(baseDir, BookmarkerFilename), nil
 }
