@@ -14,7 +14,7 @@ endif
 build:
 	@echo "Building ${BINARY_NAME}..."
 	@mkdir -p ${BUILD_DIR}
-	@go build ${LDFLAGS} -o ${BUILD_DIR}/${BINARY_NAME} ./cmd/bm
+	@go build ${LDFLAGS} -o ${BUILD_DIR}/${BINARY_NAME} ./cmd/bookmarker
 
 test:
 	@go test -v ./...

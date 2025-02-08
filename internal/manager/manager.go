@@ -2,7 +2,6 @@ package manager
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/primeapple/bookmarker/internal/storage"
@@ -18,66 +17,71 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) Run(args []string) {
+func (m *Manager) Run(args []string) error {
 	if len(args) == 0 {
 		m.handlePrintHelp()
+        return nil
 	}
 
 	switch args[0] {
 	case "--add":
-		m.handleAdd(args[1:])
+		return m.handleAdd(args[1:])
 	case "--get":
-		m.handleGet(args[1])
+		return m.handleGet(args[1])
 	case "--help":
 		m.handlePrintHelp()
+        return nil
 	default:
 		m.handlePrintHelp()
+        return nil
 	}
 }
 
-func (m *Manager) handleAdd(args []string) {
+func (m *Manager) handleAdd(args []string) error {
 	if len(args) != 1 {
-		panic("Only one argument is allowed for --add")
+		return fmt.Errorf("Only one argument is allowed for --add")
 	}
 
 	bm, err := m.store.Load()
 	if err != nil {
-		log.Printf("error when loading the bookmarks: %v", err)
-		panic("Unable to load the bookmarks. Please check permission and filespace")
+        return err
 	}
 
 	workingDirectory, err := os.Getwd()
 	if err != nil {
-		panic("Can't get current working directory")
+		return err
 	}
 
 	bm.Add(args[0], workingDirectory)
-	m.store.Save(bm)
+    err = m.store.Save(bm)
+    if err != nil {
+        return err
+    }
 
-    os.Exit(0)
+    return nil
 }
 
-func (m *Manager) handleGet(name string) {
+func (m *Manager) handleGet(name string) error {
 	bm, err := m.store.Load()
 	if err != nil {
-		log.Printf("error when loading the bookmarks: %v", err)
-		panic("Unable to load the bookmarks. Please check permission and filespace")
+		return err
 	}
 
 	path, err := bm.Get(name)
 	if err != nil {
-		panic(fmt.Sprintf("No bookmark found with name %q", name))
+        return err
 	}
 
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
-            panic(fmt.Sprintf("Path %q for bookmark %q doesn't exist on disk", path, name))
+            return fmt.Errorf("Path %q for bookmark %q doesn't exist on disk", path, name)
 		} else {
-			panic(err)
+			return err
 		}
 	}
 
 	fmt.Println(path)
+    return nil
 }
 
 func (m *Manager) handlePrintHelp() {
@@ -85,5 +89,4 @@ func (m *Manager) handlePrintHelp() {
 	fmt.Println("  bm --add <name>")
 	fmt.Println("  bm --get <name>")
 	fmt.Println("  bm <name>")
-	os.Exit(0)
 }
