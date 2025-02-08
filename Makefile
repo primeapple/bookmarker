@@ -1,6 +1,6 @@
 .PHONY: build test clean install
 
-BINARY_NAME=bm
+BINARY_NAME=bookmarker
 BUILD_DIR=build
 VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags "-X main.version=${VERSION}"
