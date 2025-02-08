@@ -28,6 +28,8 @@ func (m *Manager) Run(args []string) error {
 		return m.handleAdd(args[1:])
 	case "--get":
 		return m.handleGet(args[1])
+	case "--list":
+		return m.handleList()
 	case "--help":
 		m.handlePrintHelp()
         return nil
@@ -84,9 +86,22 @@ func (m *Manager) handleGet(name string) error {
     return nil
 }
 
+func (m *Manager) handleList() error {
+	bm, err := m.store.Load()
+	if err != nil {
+		return err
+	}
+
+	bookmarks := bm.ListAll()
+    for i, bookmark := range bookmarks {
+        fmt.Println(i, bookmark.Name, bookmark.Path)
+    }
+    return nil
+}
+
 func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
 	fmt.Println("  bm --add <name>")
 	fmt.Println("  bm --get <name>")
-	fmt.Println("  bm <name>")
+	fmt.Println("  bm --list")
 }

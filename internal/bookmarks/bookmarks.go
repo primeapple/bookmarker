@@ -22,3 +22,16 @@ func (bm Bookmarks) Get(name string) (string, error) {
 	}
 	return found, nil
 }
+
+type bookmark struct {
+	Name string
+	Path string
+}
+
+func (bm Bookmarks) ListAll() []bookmark {
+	var allBookmarks []bookmark
+	for name, path := range bm {
+		allBookmarks = append(allBookmarks, bookmark{name, path})
+	}
+	return allBookmarks
+}
