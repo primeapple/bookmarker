@@ -10,5 +10,11 @@ function bm
         return 0
     end
 
+    if test (count $argv) -eq 0 || test $argv[1] = "-h" || test $argv[1] = "--help"
+        set -l help_output (bookmarker --help)
+        string replace bookmarker bm $help_output
+        return 0
+    end
+
     bookmarker $argv
 end

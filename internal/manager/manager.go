@@ -101,7 +101,7 @@ func (m *Manager) handleList() error {
 
 func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
-	fmt.Println("  bm --add <name>")
-	fmt.Println("  bm --get <name>")
-	fmt.Println("  bm --list")
+	fmt.Println("  bookmarker [-a | --add] <name>")
+	fmt.Println("  bookmarker [-g | --get] <name>")
+	fmt.Println("  bookmarker [-l | --list]")
 }
