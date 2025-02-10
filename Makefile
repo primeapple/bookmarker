@@ -26,6 +26,6 @@ install: build
 	@echo "Installing ${BINARY_NAME}..."
 	@cp ${BUILD_DIR}/${BINARY_NAME} ${GOPATH}/bin/
 	# @mkdir -p ~/.config/fish/completions
-	# @cp pkg/shell/completions/bm.fish ~/.config/fish/completions/
-	# @cp pkg/shell/wrapper.fish ~/.config/fish/functions/bm.fish
+	# @cp pkg/shell/fish/completions.fish ~/.config/fish/completions/bm.fish
+	@cp pkg/shell/fish/wrapper.fish ~/.config/fish/functions/bm.fish
 	@echo "Installation complete"
