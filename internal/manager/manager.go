@@ -24,13 +24,13 @@ func (m *Manager) Run(args []string) error {
 	}
 
 	switch args[0] {
-	case "--add":
+	case "-a", "--add":
 		return m.handleAdd(args[1:])
-	case "--get":
+	case "-g", "--get":
 		return m.handleGet(args[1])
-	case "--list":
+    case "-l", "--list":
 		return m.handleList()
-	case "--help":
+	case "-h", "--help":
 		m.handlePrintHelp()
         return nil
 	default:
@@ -103,5 +103,6 @@ func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
 	fmt.Println("  bookmarker [-a | --add] <name>")
 	fmt.Println("  bookmarker [-g | --get] <name>")
+	fmt.Println("  bookmarker [-h | --help]")
 	fmt.Println("  bookmarker [-l | --list]")
 }
