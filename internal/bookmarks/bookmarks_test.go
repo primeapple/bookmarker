@@ -33,7 +33,7 @@ func TestAdd(t *testing.T) {
 
         bm.Add(name, path)
 
-		assertBookmarks(t, bm, name, path)
+		assertBookmark(t, bm, name, path)
 	})
 
 	t.Run("overwrite existing bookmark", func(t *testing.T) {
@@ -42,7 +42,28 @@ func TestAdd(t *testing.T) {
 
 		bm.Add(name, newPath)
 
-		assertBookmarks(t, bm, name, newPath)
+		assertBookmark(t, bm, name, newPath)
+	})
+}
+
+func TestRemove(t *testing.T) {
+	name := "home"
+	path := "/home/user"
+
+	t.Run("remove existing bookmark", func(t *testing.T) {
+		bm := Bookmarks{name: path}
+
+		bm.Remove(name)
+
+        _, err := bm.Get(name)
+		assertError(t, err, ErrBookmarkNotFound)
+	})
+
+	t.Run("remove non existing bookmark", func(t *testing.T) {
+		bm := *NewBookmarks()
+
+        err := bm.Remove(name)
+		assertError(t, err, ErrBookmarkNotFound)
 	})
 }
 
@@ -63,7 +84,7 @@ func assertString(t testing.TB, got, want string) {
 	}
 }
 
-func assertBookmarks(t testing.TB, bm Bookmarks, name, path string) {
+func assertBookmark(t testing.TB, bm Bookmarks, name, path string) {
 	got, err := bm.Get(name)
 
 	if err != nil {

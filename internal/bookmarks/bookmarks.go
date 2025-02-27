@@ -25,3 +25,12 @@ func (bm Bookmarks) Get(name string) (string, error) {
 	}
 	return found, nil
 }
+
+func (bm Bookmarks) Remove(name string) error {
+    _, err := bm.Get(name)
+    if errors.Is(err, ErrBookmarkNotFound) {
+        return err 
+    }
+    delete(bm, name)
+    return nil
+}
