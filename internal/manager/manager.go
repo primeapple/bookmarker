@@ -92,9 +92,8 @@ func (m *Manager) handleList() error {
 		return err
 	}
 
-	bookmarks := bm.ListAll()
-    for i, bookmark := range bookmarks {
-        fmt.Println(i, bookmark.Name, bookmark.Path)
+	for name, path := range *bm {
+        fmt.Println(name, path)
     }
     return nil
 }
