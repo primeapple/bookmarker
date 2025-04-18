@@ -1,4 +1,5 @@
 function bm
+    # if command isn't an option, cd into file
     if test (count $argv) -eq 1 && not string match --quiet --regex -- '-.*' $argv[1]
         set -l path (bookmarker --get $argv[1])
         set -l code $status
@@ -10,7 +11,8 @@ function bm
         return 0
     end
 
-    if test (count $argv) -eq 0 || test $argv[1] = -h || test $argv[1] = --help
+    # show help on wrong usage
+    if test (count $argv) -eq 0 || test $argv[1] = -h || test $argv[1] = --help || test $argv[1] = -i || test $argv[1] = --init
         set -l help_output (bookmarker --help)
         string replace bookmarker bm $help_output
         return 0

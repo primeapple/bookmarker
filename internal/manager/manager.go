@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/primeapple/bookmarker/internal/storage"
+	"github.com/primeapple/bookmarker/internal/shell"
 )
 
 type Manager struct {
@@ -35,6 +36,8 @@ func (m *Manager) Run(args []string) error {
 		return nil
 	case "-r", "--remove":
 		return m.handleRemove(args[1:])
+	case "-i", "--init":
+		return m.handleInit(args[1:])
 	default:
 		m.handlePrintHelp()
 		return nil
@@ -123,6 +126,22 @@ func (m *Manager) handleRemove(names []string) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (m *Manager) handleInit(names []string) error {
+	if len(names) != 1 {
+		return fmt.Errorf("Only one argument is allowed for --init")
+	}
+
+	switch names[0] {
+	case "fish":
+		fmt.Println(shell.InitFish())
+	default:
+		return fmt.Errorf("Unsupported shell %q", names[0])
+	}
+
 
 	return nil
 }
