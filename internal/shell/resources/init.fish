@@ -1,7 +1,6 @@
 function bm
-    # if command isn't an option, cd into file
-    if test (count $argv) -eq 1 && not string match --quiet --regex -- '-.*' $argv[1]
-        set -l path (bookmarker --get $argv[1])
+    if test (count $argv) -eq 2 && test $argv[1] = go
+        set -l path (bookmarker get $argv[2])
         set -l code $status
         if test $code -ne 0
             return $code
@@ -11,9 +10,8 @@ function bm
         return 0
     end
 
-    # show help on wrong usage
-    if test (count $argv) -eq 0 || test $argv[1] = -h || test $argv[1] = --help || test $argv[1] = -i || test $argv[1] = --init
-        set -l help_output (bookmarker --help)
+    if test (count $argv) -eq 0 || test $argv[1] = help || test $argv[1] = init
+        set -l help_output (bookmarker help)
         string replace bookmarker bm $help_output
         return 0
     end
@@ -21,11 +19,15 @@ function bm
     bookmarker $argv
 end
 
-set -l options -a --add -g --get -l --list
+set -l commands add get go help list remove
 
 complete -c bm --no-file
-complete -c bm --condition "not __fish_seen_subcommand_from $options" --require-parameter --arguments "(bm --list | awk '{ print \$1 }')" --description "Change directory to bookmark path"
-complete -c bm --old-option a --long-option add --description "Add named bookmark to current directory"
-complete -c bm --old-option g --long-option get --require-parameter --arguments "(bm --list | awk '{ print \$1 }')" --description "Print path to bookmark"
-complete -c bm --old-option h --long-option help --description "Displays help for the 'bm' command"
-complete -c bm --old-option l --long-option list --description "List all available bookmarks with their index and path"
+complete -c bm --condition "not __fish_seen_subcommand_from $commands" --arguments "add" --description "Add named bookmark to current directory"
+complete -c bm --condition "not __fish_seen_subcommand_from $commands" --arguments "get" --description "Print path for named bookmark"
+complete -c bm --condition "not __fish_seen_subcommand_from $commands" --arguments "go" --description "Change directory to bookmark path"
+complete -c bm --condition "not __fish_seen_subcommand_from $commands" --arguments "help" --description "Displays help for the 'bm' command"
+complete -c bm --condition "not __fish_seen_subcommand_from $commands" --arguments "list" --description "List all available bookmarks with their index and path"
+complete -c bm --condition "not __fish_seen_subcommand_from $commands" --arguments "remove" --description "Remove named bookmark"
+complete -c bm --condition "__fish_seen_subcommand_from get" --arguments "(bookmarker list | awk '{ print \$1 }')"
+complete -c bm --condition "__fish_seen_subcommand_from go" --arguments "(bookmarker list | awk '{ print \$1 }')"
+complete -c bm --condition "__fish_seen_subcommand_from remove" --arguments "(bookmarker list | awk '{ print \$1 }')"

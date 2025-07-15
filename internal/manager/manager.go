@@ -25,19 +25,19 @@ func (m *Manager) Run(args []string) error {
 	}
 
 	switch args[0] {
-	case "-a", "--add":
+	case "add":
 		return m.handleAdd(args[1:])
-	case "-g", "--get":
+	case "get":
 		return m.handleGet(args[1:])
-	case "-l", "--list":
-		return m.handleList()
-	case "-h", "--help":
+	case "help":
 		m.handlePrintHelp()
 		return nil
-	case "-r", "--remove":
-		return m.handleRemove(args[1:])
-	case "-i", "--init":
+	case "init":
 		return m.handleInit(args[1:])
+	case "list":
+		return m.handleList()
+	case "remove":
+		return m.handleRemove(args[1:])
 	default:
 		m.handlePrintHelp()
 		return nil
@@ -46,7 +46,7 @@ func (m *Manager) Run(args []string) error {
 
 func (m *Manager) handleAdd(args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Only one argument is allowed for --add")
+		return fmt.Errorf("Only one argument is allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -70,7 +70,7 @@ func (m *Manager) handleAdd(args []string) error {
 
 func (m *Manager) handleGet(names []string) error {
 	if len(names) != 1 {
-		return fmt.Errorf("Only one argument is allowed for --add")
+		return fmt.Errorf("Only one argument is allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -109,7 +109,7 @@ func (m *Manager) handleList() error {
 
 func (m *Manager) handleRemove(names []string) error {
 	if len(names) != 1 {
-		return fmt.Errorf("Only one argument is allowed for --add")
+		return fmt.Errorf("Only one argument is allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -132,7 +132,7 @@ func (m *Manager) handleRemove(names []string) error {
 
 func (m *Manager) handleInit(names []string) error {
 	if len(names) != 1 {
-		return fmt.Errorf("Only one argument is allowed for --init")
+		return fmt.Errorf("Only one argument is allowed for init")
 	}
 
 	switch names[0] {
@@ -148,9 +148,10 @@ func (m *Manager) handleInit(names []string) error {
 
 func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
-	fmt.Println("  bookmarker [-a | --add] <name>")
-	fmt.Println("  bookmarker [-g | --get] <name>")
-	fmt.Println("  bookmarker [-h | --help]")
-	fmt.Println("  bookmarker [-l | --list]")
-	fmt.Println("  bookmarker [-r | --remove] <name>")
+	fmt.Println("  bookmarker add")
+	fmt.Println("  bookmarker get <name>")
+	fmt.Println("  bookmarker init {fish}")
+	fmt.Println("  bookmarker help")
+	fmt.Println("  bookmarker list")
+	fmt.Println("  bookmarker remove <name>")
 }

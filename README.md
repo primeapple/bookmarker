@@ -12,5 +12,5 @@ make install
     1. Fish
     ```sh
     # add to your config.fish
-    bookmarker --init fish | source
+    bookmarker init fish | source
     ```

@@ -40,7 +40,7 @@ func (store *JSONStorage) Load() (*bookmarks.Bookmarks, error) {
 
 	var result bookmarks.Bookmarks
 	if err := json.Unmarshal(data, &result); err != nil {
-		panic(fmt.Sprintf("File %v was not a valid json: %w", data, err))
+		panic(fmt.Sprintf("File %v is not a valid json: %q", data, err.Error()))
 	}
 
 	return &result, nil
