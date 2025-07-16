@@ -101,9 +101,7 @@ func (m *Manager) handleList() error {
 		return err
 	}
 
-	for name, path := range *bm {
-		fmt.Println(name, path)
-	}
+	fmt.Println(bm.PrettyList())
 	return nil
 }
 

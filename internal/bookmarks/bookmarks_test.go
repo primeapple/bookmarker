@@ -31,18 +31,31 @@ func TestAdd(t *testing.T) {
 	t.Run("new bookmark", func(t *testing.T) {
 		bm := *NewBookmarks()
 
-        bm.Add(name, path)
+		bm.Add(name, path)
 
 		assertBookmark(t, bm, name, path)
 	})
 
 	t.Run("overwrite existing bookmark", func(t *testing.T) {
-        newPath := "/home/otherUser"
+		newPath := "/home/otherUser"
 		bm := Bookmarks{name: path}
 
 		bm.Add(name, newPath)
 
 		assertBookmark(t, bm, name, newPath)
+	})
+}
+
+func TestPrettyList(t *testing.T) {
+	bm := Bookmarks{"name": "path1", "verylongname": "path2"}
+
+	t.Run("should pad with spaces correctly", func(t *testing.T) {
+		want := 
+`| name         | path1 |
+| verylongname | path2 |`
+
+		got := bm.PrettyList()
+		assertString(t, got, want)
 	})
 }
 
@@ -55,18 +68,17 @@ func TestRemove(t *testing.T) {
 
 		bm.Remove(name)
 
-        _, err := bm.Get(name)
+		_, err := bm.Get(name)
 		assertError(t, err, ErrBookmarkNotFound)
 	})
 
 	t.Run("remove non existing bookmark", func(t *testing.T) {
 		bm := *NewBookmarks()
 
-        err := bm.Remove(name)
+		err := bm.Remove(name)
 		assertError(t, err, ErrBookmarkNotFound)
 	})
 }
-
 
 func assertError(t testing.TB, got, want error) {
 	t.Helper()
