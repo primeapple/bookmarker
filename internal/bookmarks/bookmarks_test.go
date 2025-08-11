@@ -5,53 +5,53 @@ import (
 	"testing"
 )
 
-func TestGet(t *testing.T) {
-	bm := Bookmarks{"home": "/home/user"}
+func TestGetNamed(t *testing.T) {
+	bm := createBookmarks(map[string]string{"home": "/home/user"})
 
 	t.Run("find existing bookmark", func(t *testing.T) {
 		want := "/home/user"
 
-		got, err := bm.Get("home")
+		got, err := bm.GetNamed("home")
 
 		assertError(t, err, nil)
 		assertString(t, got, want)
 	})
 
 	t.Run("give error on non existing bookmark", func(t *testing.T) {
-		_, err := bm.Get("unknown")
+		_, err := bm.GetNamed("unknown")
 
 		assertError(t, err, ErrBookmarkNotFound)
 	})
 }
 
-func TestAdd(t *testing.T) {
+func TestAddNamed(t *testing.T) {
 	name := "home"
 	path := "/home/user"
 
 	t.Run("new bookmark", func(t *testing.T) {
 		bm := *NewBookmarks()
 
-		bm.Add(name, path)
+		bm.AddNamed(name, path)
 
 		assertBookmark(t, bm, name, path)
 	})
 
 	t.Run("overwrite existing bookmark", func(t *testing.T) {
 		newPath := "/home/otherUser"
-		bm := Bookmarks{name: path}
+		bm := createBookmarks(map[string]string{name: path})
 
-		bm.Add(name, newPath)
+		bm.AddNamed(name, newPath)
 
 		assertBookmark(t, bm, name, newPath)
 	})
 }
 
 func TestPrettyList(t *testing.T) {
-	bm := Bookmarks{"name": "path1", "verylongname": "path2"}
+	bm := createBookmarks(map[string]string{"name": "path1", "verylongname": "path2"})
 
 	t.Run("should pad with spaces correctly", func(t *testing.T) {
-		want := 
-`| name         | path1 |
+		want :=
+			`| name         | path1 |
 | verylongname | path2 |`
 
 		got := bm.PrettyList()
@@ -59,32 +59,36 @@ func TestPrettyList(t *testing.T) {
 	})
 }
 
-func TestRemove(t *testing.T) {
+func TestRemoveNamed(t *testing.T) {
 	name := "home"
 	path := "/home/user"
 
 	t.Run("remove existing bookmark", func(t *testing.T) {
-		bm := Bookmarks{name: path}
+		bm := createBookmarks(map[string]string{name: path})
 
-		bm.Remove(name)
+		bm.RemoveNamed(name)
 
-		_, err := bm.Get(name)
+		_, err := bm.GetNamed(name)
 		assertError(t, err, ErrBookmarkNotFound)
 	})
 
 	t.Run("remove non existing bookmark", func(t *testing.T) {
 		bm := *NewBookmarks()
 
-		err := bm.Remove(name)
+		err := bm.RemoveNamed(name)
 		assertError(t, err, ErrBookmarkNotFound)
 	})
+}
+
+func createBookmarks(named map[string]string) Bookmarks {
+	return Bookmarks{Named: named, Unnamed: map[string]string{}}
 }
 
 func assertError(t testing.TB, got, want error) {
 	t.Helper()
 
 	if !errors.Is(got, want) {
-		t.Errorf("Got %q wanted %q", got.Error(), want.Error())
+		t.Errorf("got %q wanted %q", got.Error(), want.Error())
 	}
 }
 
@@ -92,12 +96,12 @@ func assertString(t testing.TB, got, want string) {
 	t.Helper()
 
 	if got != want {
-		t.Errorf("Got %q wanted %q", got, want)
+		t.Errorf("got %q wanted %q", got, want)
 	}
 }
 
 func assertBookmark(t testing.TB, bm Bookmarks, name, path string) {
-	got, err := bm.Get(name)
+	got, err := bm.GetNamed(name)
 
 	if err != nil {
 		t.Fatalf("Should find added bookmark %q", name)

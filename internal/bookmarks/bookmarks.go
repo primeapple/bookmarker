@@ -6,20 +6,26 @@ import (
 	"strings"
 )
 
-type Bookmarks map[string]string
+type Bookmarks struct {
+	Named   map[string]string
+	Unnamed map[string]string
+}
 
 var ErrBookmarkNotFound = errors.New("bookmark not found")
 
 func NewBookmarks() *Bookmarks {
-	return &Bookmarks{}
+	return &Bookmarks{
+		Named:   map[string]string{},
+		Unnamed: map[string]string{},
+	}
 }
 
-func (bm Bookmarks) Add(name string, path string) {
-	bm[name] = path
+func (bm Bookmarks) AddNamed(name string, path string) {
+	bm.Named[name] = path
 }
 
-func (bm Bookmarks) Get(name string) (string, error) {
-	found, ok := bm[name]
+func (bm Bookmarks) GetNamed(name string) (string, error) {
+	found, ok := bm.Named[name]
 
 	if !ok {
 		return "", fmt.Errorf("%w: %q", ErrBookmarkNotFound, name)
@@ -30,7 +36,7 @@ func (bm Bookmarks) Get(name string) (string, error) {
 func (bm Bookmarks) PrettyList() string {
 	maxNameLength := 0
 	maxPathLength := 0
-	for name, path := range bm {
+	for name, path := range bm.Named {
 		if len(name) > maxNameLength {
 			maxNameLength = len(name)
 		}
@@ -40,7 +46,7 @@ func (bm Bookmarks) PrettyList() string {
 	}
 
 	output := ""
-	for name, path := range bm {
+	for name, path := range bm.Named {
 		output += fmt.Sprintf("| %-*s | %-*s |\n", maxNameLength, name, maxPathLength, path)
 	}
 	output = strings.TrimSuffix(output, "\n")
@@ -48,11 +54,11 @@ func (bm Bookmarks) PrettyList() string {
 	return output
 }
 
-func (bm Bookmarks) Remove(name string) error {
-	_, err := bm.Get(name)
+func (bm Bookmarks) RemoveNamed(name string) error {
+	_, err := bm.GetNamed(name)
 	if errors.Is(err, ErrBookmarkNotFound) {
 		return err
 	}
-	delete(bm, name)
+	delete(bm.Named, name)
 	return nil
 }

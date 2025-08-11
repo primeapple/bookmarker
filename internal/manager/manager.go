@@ -46,7 +46,7 @@ func (m *Manager) Run(args []string) error {
 
 func (m *Manager) handleAdd(args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Only one argument is allowed for add")
+		return fmt.Errorf("only one argument is allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -59,7 +59,7 @@ func (m *Manager) handleAdd(args []string) error {
 		return err
 	}
 
-	bm.Add(args[0], workingDirectory)
+	bm.AddNamed(args[0], workingDirectory)
 	err = m.store.Save(bm)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (m *Manager) handleAdd(args []string) error {
 
 func (m *Manager) handleGet(names []string) error {
 	if len(names) != 1 {
-		return fmt.Errorf("Only one argument is allowed for add")
+		return fmt.Errorf("only one argument is allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -78,14 +78,14 @@ func (m *Manager) handleGet(names []string) error {
 		return err
 	}
 
-	path, err := bm.Get(names[0])
+	path, err := bm.GetNamed(names[0])
 	if err != nil {
 		return err
 	}
 
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("Path %q for bookmark %q doesn't exist on disk", path, names[0])
+			return fmt.Errorf("path %q for bookmark %q doesn't exist on disk", path, names[0])
 		} else {
 			return err
 		}
@@ -107,7 +107,7 @@ func (m *Manager) handleList() error {
 
 func (m *Manager) handleRemove(names []string) error {
 	if len(names) != 1 {
-		return fmt.Errorf("Only one argument is allowed for add")
+		return fmt.Errorf("only one argument is allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -115,7 +115,7 @@ func (m *Manager) handleRemove(names []string) error {
 		return err
 	}
 
-    err = bm.Remove(names[0])
+    err = bm.RemoveNamed(names[0])
     if err != nil {
         return err
     }
@@ -130,14 +130,14 @@ func (m *Manager) handleRemove(names []string) error {
 
 func (m *Manager) handleInit(names []string) error {
 	if len(names) != 1 {
-		return fmt.Errorf("Only one argument is allowed for init")
+		return fmt.Errorf("only one argument is allowed for init")
 	}
 
 	switch names[0] {
 	case "fish":
 		fmt.Println(shell.InitFish())
 	default:
-		return fmt.Errorf("Unsupported shell %q", names[0])
+		return fmt.Errorf("unsupported shell %q", names[0])
 	}
 
 
