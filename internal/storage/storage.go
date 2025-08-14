@@ -38,7 +38,7 @@ func (store *JSONStorage) Load() (*bookmarks.Bookmarks, error) {
 		return nil, fmt.Errorf("can't read bookmarks file: %w", err)
 	}
 
-	bookmarks, err := ParseBookmarksFile(data)
+	bookmarks, err := ParseBookmarksData(data)
 	if err != nil {
 		return nil, fmt.Errorf("can't parse bookmarks file: %w", err)
 	}

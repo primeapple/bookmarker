@@ -13,7 +13,7 @@ var migrations = map[int]Migrator{
 	0: MigrateV0toV1,
 }
 
-func ParseBookmarksFile(jsonData []byte) (*bookmarks.Bookmarks, error) {
+func ParseBookmarksData(jsonData []byte) (*bookmarks.Bookmarks, error) {
 	var data map[string]any
 	if err := json.Unmarshal(jsonData, &data); err != nil {
 		return nil, fmt.Errorf("failed to parse json data into map[string]any: %w", err)
@@ -21,24 +21,31 @@ func ParseBookmarksFile(jsonData []byte) (*bookmarks.Bookmarks, error) {
 
 	version, ok := data["_version"].(float64)
 	if !ok {
-		return nil, fmt.Errorf("missing or invalid `_version` property in json data")
+		return nil, fmt.Errorf("missing or invalid `_version` property in json data %v", data)
+	}
+	intVersion := int(version)
+	data["_version"] = intVersion
+
+	_, exists := migrations[intVersion]
+	if !exists {
+		return nil, fmt.Errorf("no migration found for version %d", intVersion)
 	}
 
-	for int(version) < LATEST_VERSION {
-		currentVersion := int(version)
-		migrate, exists := migrations[currentVersion]
+	for intVersion < LATEST_VERSION {
+		migrate, exists := migrations[intVersion]
 		if !exists {
-			return nil, fmt.Errorf("no migration found for version %d", currentVersion)
+			return nil, fmt.Errorf("no migration found for version %d", intVersion)
 		}
 
-		data, err := migrate(data)
+		var err error
+		data, err = migrate(data)
 		if err != nil {
-			return nil, fmt.Errorf("migration %d failed: %w", currentVersion, err)
+			return nil, fmt.Errorf("migration %d failed: %w", int(version), err)
 		}
 
-		version, ok = data["_version"].(float64)
+		intVersion, ok = data["_version"].(int)
 		if !ok {
-			return nil, fmt.Errorf("missing or invalid `_version` property in json data after migration %d", currentVersion)
+			return nil, fmt.Errorf("missing or invalid `_version` property in json data after migration %d", intVersion)
 		}
 	}
 
@@ -51,4 +58,15 @@ func ParseBookmarksFile(jsonData []byte) (*bookmarks.Bookmarks, error) {
 		return nil, fmt.Errorf("could not fit migrated data into latest scchema: %w", err)
 	}
 	return latest.ToBookmarks(), nil
+}
+
+func getVersion(data map[string]any) (float64, bool) {
+	switch v := data["_version"].(type) {
+	case float64:
+		return v, true
+	case int:
+		return float64(v), true
+	default:
+		return -1, false
+	}
 }
