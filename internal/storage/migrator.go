@@ -27,7 +27,7 @@ func ParseBookmarksData(jsonData []byte) (*bookmarks.Bookmarks, error) {
 	data["_version"] = intVersion
 
 	_, exists := migrations[intVersion]
-	if !exists {
+	if !exists && intVersion != LATEST_VERSION {
 		return nil, fmt.Errorf("no migration found for version %d", intVersion)
 	}
 

@@ -51,9 +51,11 @@ func (store *JSONStorage) Save(bm *bookmarks.Bookmarks) error {
 		panic("Passed `nil` as bookmarks")
 	}
 
-	data, err := json.MarshalIndent(bm, "", "\t")
+	schema := FromBookmarks(bm)
+
+	data, err := json.MarshalIndent(schema, "", "\t")
 	if err != nil {
-		return fmt.Errorf("could not convert bookmarks %v to json %w", bm, err)
+		return fmt.Errorf("could not convert bookmarks schema %v to json %w", schema, err)
 	}
 
 	if err := store.createDirIfNotExists(); err != nil {

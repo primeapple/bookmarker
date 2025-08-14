@@ -29,9 +29,34 @@ func TestParseBookmarksData(t *testing.T) {
 		assertBookmarks(t, got, &want)
 	})
 
+	t.Run("load valid latest data", func(t *testing.T) {
+		latestData := fmt.Appendf(nil, `{
+			"_version":  %d,
+			"bookmarks": {
+				"named": {
+					"name":      "path",
+					"otherName": "otherPath"
+				},
+				"unnamed": {}
+			}
+		}`, LATEST_VERSION)
+		want := bookmarks.Bookmarks{
+			Named: map[string]string{
+				"name":      "path",
+				"otherName": "otherPath",
+			},
+			Unnamed: map[string]string{},
+		}
+
+		got, err := ParseBookmarksData(latestData)
+
+		assertNil(t, err)
+		assertBookmarks(t, got, &want)
+	})
+
 	t.Run("abort on non existing version", func(t *testing.T) {
 		data := []byte(`{
-			"_version":  1,
+			"_version":  2,
 			"name":      "path",
 			"otherName": "otherPath"
 		}`)
