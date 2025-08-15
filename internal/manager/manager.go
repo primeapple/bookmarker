@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/primeapple/bookmarker/internal/storage"
 	"github.com/primeapple/bookmarker/internal/shell"
+	"github.com/primeapple/bookmarker/internal/storage"
 )
 
 type Manager struct {
@@ -115,10 +115,10 @@ func (m *Manager) handleRemove(names []string) error {
 		return err
 	}
 
-    err = bm.RemoveNamed(names[0])
-    if err != nil {
-        return err
-    }
+	err = bm.RemoveNamed(names[0])
+	if err != nil {
+		return err
+	}
 
 	err = m.store.Save(bm)
 	if err != nil {
@@ -139,7 +139,6 @@ func (m *Manager) handleInit(names []string) error {
 	default:
 		return fmt.Errorf("unsupported shell %q", names[0])
 	}
-
 
 	return nil
 }

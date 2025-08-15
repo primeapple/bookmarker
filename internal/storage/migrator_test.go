@@ -93,7 +93,6 @@ func assertNotNil(t testing.TB, got error) {
 	}
 }
 
-
 func assertBookmarks(t testing.TB, got, want *bookmarks.Bookmarks) {
 	t.Helper()
 

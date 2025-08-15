@@ -59,14 +59,3 @@ func ParseBookmarksData(jsonData []byte) (*bookmarks.Bookmarks, error) {
 	}
 	return latest.ToBookmarks(), nil
 }
-
-func getVersion(data map[string]any) (float64, bool) {
-	switch v := data["_version"].(type) {
-	case float64:
-		return v, true
-	case int:
-		return float64(v), true
-	default:
-		return -1, false
-	}
-}
