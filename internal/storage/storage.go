@@ -63,6 +63,10 @@ func (store *JSONStorage) Save(bm *bookmarks.Bookmarks) error {
 	}
 
 	path, err := getStorageFilePath()
+	if err != nil {
+		return fmt.Errorf("could not find storage file path %w", err)
+	}
+
 	if err := os.WriteFile(path, data, PermissionUserReadWrite); err != nil {
 		return fmt.Errorf("could not write bookmarker file to %q , %w", path, err)
 	}

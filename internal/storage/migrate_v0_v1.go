@@ -28,7 +28,7 @@ func MigrateV0toV1(data map[string]any) (map[string]any, error) {
 	bookmarks["unnamed"] = map[string]any{}
 
 	result := map[string]any{
-		"_version": BEFORE_VERSION + 1,
+		"_version":  BEFORE_VERSION + 1,
 		"bookmarks": bookmarks,
 	}
 

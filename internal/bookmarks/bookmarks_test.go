@@ -66,9 +66,11 @@ func TestRemoveNamed(t *testing.T) {
 	t.Run("remove existing bookmark", func(t *testing.T) {
 		bm := createBookmarks(map[string]string{name: path})
 
-		bm.RemoveNamed(name)
+		err := bm.RemoveNamed(name)
 
-		_, err := bm.GetNamed(name)
+		assertNil(t, err)
+
+		_, err = bm.GetNamed(name)
 		assertError(t, err, ErrBookmarkNotFound)
 	})
 
@@ -108,4 +110,10 @@ func assertBookmark(t testing.TB, bm Bookmarks, name, path string) {
 	}
 
 	assertString(t, got, path)
+}
+
+func assertNil(t testing.TB, got any) {
+	if got != nil {
+		t.Errorf("got %v wanted nil", got)
+	}
 }
