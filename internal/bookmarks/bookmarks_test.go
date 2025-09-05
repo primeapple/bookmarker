@@ -31,8 +31,9 @@ func TestAddNamed(t *testing.T) {
 	t.Run("new bookmark", func(t *testing.T) {
 		bm := *NewBookmarks()
 
-		bm.AddNamed(name, path)
+		err := bm.AddNamed(name, path)
 
+		assertNil(t, err)
 		assertBookmark(t, bm, name, path)
 	})
 
@@ -40,8 +41,9 @@ func TestAddNamed(t *testing.T) {
 		newPath := "/home/otherUser"
 		bm := createBookmarks(map[string]string{name: path})
 
-		bm.AddNamed(name, newPath)
+		err := bm.AddNamed(name, newPath)
 
+		assertNil(t, err)
 		assertBookmark(t, bm, name, newPath)
 	})
 }

@@ -3,6 +3,7 @@ package bookmarks
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -20,8 +21,14 @@ func NewBookmarks() *Bookmarks {
 	}
 }
 
-func (bm Bookmarks) AddNamed(name string, path string) {
-	bm.Named[name] = path
+func (bm Bookmarks) AddNamed(name string, path string) error {
+	absolutePath, err := filepath.Abs(path)
+	if err != nil {
+		return fmt.Errorf("cannot get absolut path: %q", err)
+	}
+
+	bm.Named[name] = absolutePath
+	return nil
 }
 
 func (bm Bookmarks) GetNamed(name string) (string, error) {
