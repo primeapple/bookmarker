@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -19,6 +20,17 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) Run(args []string) error {
+	addCmd := flag.NewFlagSet("add", flag.ExitOnError)
+	getCmd := flag.NewFlagSet("get", flag.ExitOnError)
+	initCmd := flag.NewFlagSet("init", flag.ExitOnError)
+	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
+	removeCmd := flag.NewFlagSet("remove", flag.ExitOnError)
+
+	addCmd.Usage = func() {
+		fmt.Printf("Usage: %s add [name] path\n", os.Args[0])
+		fmt.Printf("Add a named or temporary item to the bookmarks\n")
+	}
+
 	if len(args) == 0 {
 		m.handlePrintHelp()
 		return nil
@@ -26,18 +38,38 @@ func (m *Manager) Run(args []string) error {
 
 	switch args[0] {
 	case "add":
-		return m.handleAdd(args[1:])
+		err := addCmd.Parse(args[1:])
+		if err != nil {
+			return err
+		}
+		return m.handleAdd(addCmd.Args())
 	case "get":
-		return m.handleGet(args[1:])
+		err := getCmd.Parse(args[1:])
+		if err != nil {
+			return err
+		}
+		return m.handleGet(getCmd.Args())
 	case "help":
 		m.handlePrintHelp()
 		return nil
 	case "init":
-		return m.handleInit(args[1:])
+		err := initCmd.Parse(args[1:])
+		if err != nil {
+			return err
+		}
+		return m.handleInit(initCmd.Args())
 	case "list":
+		err := listCmd.Parse(args[1:])
+		if err != nil {
+			return err
+		}
 		return m.handleList()
 	case "remove":
-		return m.handleRemove(args[1:])
+		err := removeCmd.Parse(args[1:])
+		if err != nil {
+			return err
+		}
+		return m.handleRemove(removeCmd.Args())
 	default:
 		m.handlePrintHelp()
 		return nil
@@ -45,8 +77,16 @@ func (m *Manager) Run(args []string) error {
 }
 
 func (m *Manager) handleAdd(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("only one argument is allowed for add")
+	var name string
+	var path string
+	switch len(args) {
+	case 1:
+		path = args[0]
+	case 2:
+		name = args[0]
+		path = args[1]
+	default:
+		return fmt.Errorf("either one or two arguments are allowed for add")
 	}
 
 	bm, err := m.store.Load()
@@ -54,12 +94,15 @@ func (m *Manager) handleAdd(args []string) error {
 		return err
 	}
 
-	workingDirectory, err := os.Getwd()
-	if err != nil {
-		return err
+	if name == "" {
+		// add temp bookmark
+	} else {
+		err := bm.AddNamed(name, path)
+		if err != nil {
+			return fmt.Errorf("bookmark cannot be added: %q", err)
+		}
 	}
 
-	bm.AddNamed(args[0], workingDirectory)
 	err = m.store.Save(bm)
 	if err != nil {
 		return err
@@ -145,10 +188,10 @@ func (m *Manager) handleInit(names []string) error {
 
 func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
-	fmt.Println("  bookmarker add")
-	fmt.Println("  bookmarker get <name>")
-	fmt.Println("  bookmarker init {fish}")
-	fmt.Println("  bookmarker help")
-	fmt.Println("  bookmarker list")
-	fmt.Println("  bookmarker remove <name>")
+	fmt.Printf("  %s add [<name>] <path>\n", os.Args[0])
+	fmt.Printf("  %s get <name>\n", os.Args[0])
+	fmt.Printf("  %s init {fish}\n", os.Args[0])
+	fmt.Printf("  %s help\n", os.Args[0])
+	fmt.Printf("  %s list\n", os.Args[0])
+	fmt.Printf("  %s remove <name>\n", os.Args[0])
 }
