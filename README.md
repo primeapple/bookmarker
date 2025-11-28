@@ -3,7 +3,7 @@ bookmarks
 
 ## Installation
 
-1. Install the `bookmarker` binary
+1. Install the `bm` binary
 ```sh
 make install
 ```
@@ -12,5 +12,5 @@ make install
     1. Fish
     ```sh
     # add to your config.fish
-    bookmarker init fish | source
+    bm init fish | source
     ```
