@@ -69,3 +69,15 @@ func (bm Bookmarks) RemoveNamed(name string) error {
 	delete(bm.Named, name)
 	return nil
 }
+
+// PathType represents the type of a filesystem path
+type PathType string
+
+const (
+	FileType PathType = "file"
+	DirType  PathType = "dir"
+)
+
+func typeOf(path string) (PathType, error) {
+
+}
