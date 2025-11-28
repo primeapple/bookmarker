@@ -95,7 +95,7 @@ func (m *Manager) handleAdd(args []string) error {
 	}
 
 	if name == "" {
-		// add temp bookmark
+		return fmt.Errorf("temporary bookmarks not yet implemented")
 	} else {
 		err := bm.AddNamed(name, path)
 		if err != nil {
