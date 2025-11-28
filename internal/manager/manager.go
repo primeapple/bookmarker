@@ -190,6 +190,7 @@ func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
 	fmt.Printf("  %s add [<name>] <path>\n", os.Args[0])
 	fmt.Printf("  %s get <name>\n", os.Args[0])
+	fmt.Printf("  %s go <name>\n", os.Args[0])
 	fmt.Printf("  %s init {fish}\n", os.Args[0])
 	fmt.Printf("  %s help\n", os.Args[0])
 	fmt.Printf("  %s list\n", os.Args[0])

@@ -1,6 +1,6 @@
 .PHONY: build test clean install lint format fmtcheck check install-tools
 
-BINARY_NAME=bookmarker
+BINARY_NAME=bm
 BUILD_DIR=build
 VERSION=$(shell git describe --tags --always --dirty)
 LDFLAGS=-ldflags "-X main.version=${VERSION}"
@@ -18,7 +18,7 @@ install-tools:
 build:
 	@echo "Building ${BINARY_NAME}..."
 	@mkdir -p ${BUILD_DIR}
-	@go build ${LDFLAGS} -o ${BUILD_DIR}/${BINARY_NAME} ./cmd/bookmarker
+	@go build ${LDFLAGS} -o ${BUILD_DIR}/${BINARY_NAME} ./cmd/bm
 
 test:
 	@go test -v ./...
