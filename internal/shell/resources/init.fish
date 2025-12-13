@@ -1,4 +1,4 @@
-set -g __bm_commands add get go help list remove
+set -g __bm_commands add clean get go help list remove
 
 function bm
     if test (count $argv) -eq 2 && test $argv[1] = go
@@ -18,6 +18,7 @@ end
 
 complete -c bm --no-file
 complete -c bm --condition "not __fish_seen_subcommand_from $__bm_commands" --arguments add --description "Add named bookmark to current directory"
+complete -c bm --condition "not __fish_seen_subcommand_from $__bm_commands" --arguments clean --description "Remove bookmarks for non-existant paths"
 complete -c bm --condition "not __fish_seen_subcommand_from $__bm_commands" --arguments get --description "Print path for named bookmark"
 complete -c bm --condition "not __fish_seen_subcommand_from $__bm_commands" --arguments go --description "Change directory to bookmark path"
 complete -c bm --condition "not __fish_seen_subcommand_from $__bm_commands" --arguments help --description "Displays help for the 'bm' command"
