@@ -49,11 +49,12 @@ func TestAddNamed(t *testing.T) {
 }
 
 func TestPrettyList(t *testing.T) {
-	bm := createBookmarks(map[string]string{"name": "path1", "verylongname": "path2"})
+	bm := createBookmarks(map[string]string{"name": "path1", "verylongname": "path2", "a_name": "path3"})
 
-	t.Run("should pad with spaces correctly", func(t *testing.T) {
+	t.Run("should pad with spaces and sort correctly", func(t *testing.T) {
 		want :=
-			`| name         | path1 |
+			`| a_name       | path3 |
+| name         | path1 |
 | verylongname | path2 |`
 
 		got := bm.PrettyList()

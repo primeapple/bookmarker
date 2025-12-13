@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -52,9 +53,15 @@ func (bm Bookmarks) PrettyList() string {
 		}
 	}
 
+	sortedNames := make([]string, 0, len(bm.Named))
+	for key := range bm.Named {
+		sortedNames = append(sortedNames, key)
+	}
+	slices.Sort(sortedNames)
+
 	output := ""
-	for name, path := range bm.Named {
-		output += fmt.Sprintf("| %-*s | %-*s |\n", maxNameLength, name, maxPathLength, path)
+	for _, name := range sortedNames {
+		output += fmt.Sprintf("| %-*s | %-*s |\n", maxNameLength, name, maxPathLength, bm.Named[name])
 	}
 	output = strings.TrimSuffix(output, "\n")
 
