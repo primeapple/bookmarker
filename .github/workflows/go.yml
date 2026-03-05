@@ -25,8 +25,8 @@ jobs:
       - name: Run format check
         run: make formatcheck
 
-      - name: Run lint
-        run: make lint
+      - name: Run vet
+        run: make vet
 
       - name: Run tests
         run: make test

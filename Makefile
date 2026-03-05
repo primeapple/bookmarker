@@ -1,4 +1,4 @@
-.PHONY: build test clean install lint format fmtcheck check install-tools
+.PHONY: build test clean install format fmtcheck vet
 
 BINARY_NAME=bm
 BUILD_DIR=build
@@ -11,21 +11,18 @@ GOPATH=$(HOME)/go
 $(info GOPATH not set, using default: $(GOPATH))
 endif
 
-install-tools:
-	@echo "Installing development tools..."
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-
 build:
 	@echo "Building ${BINARY_NAME}..."
 	@mkdir -p ${BUILD_DIR}
 	@go build ${LDFLAGS} -o ${BUILD_DIR}/${BINARY_NAME} ./cmd/bm
 
 test:
+	@echo "Running tests..."
 	@go test -v ./...
 
-lint:
-	@echo "Running linter..."
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run
+vet:
+	@echo "Running lint..."
+	@go vet ./...
 
 formatcheck:
 	@echo "Checking formatting..."
@@ -43,8 +40,7 @@ format:
 	@gofmt -s -w .
 	@go mod tidy
 
-# Combined check target that runs format, lint, and test
-check: format lint test
+all: format vet test build
 	@echo "All checks passed!"
 
 clean:
