@@ -43,6 +43,9 @@ func (m *Manager) Run(args []string) error {
 			return err
 		}
 		return m.handleAdd(addCmd.Args())
+	case "clean":
+		return m.handleClean()
+		return nil
 	case "get":
 		err := getCmd.Parse(args[1:])
 		if err != nil {
@@ -103,6 +106,25 @@ func (m *Manager) handleAdd(args []string) error {
 		}
 	}
 
+	err = m.store.Save(bm)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Manager) handleClean() error {
+	bm, err := m.store.Load()
+	if err != nil {
+		return err
+	}
+
+	err = bm.RemoveInvalid()
+	if err != nil {
+		return err
+	}
+	
 	err = m.store.Save(bm)
 	if err != nil {
 		return err
@@ -189,10 +211,11 @@ func (m *Manager) handleInit(names []string) error {
 func (m *Manager) handlePrintHelp() {
 	fmt.Println("Usage:")
 	fmt.Printf("  %s add [<name>] <path>\n", os.Args[0])
+	fmt.Printf("  %s clean\n", os.Args[0])
 	fmt.Printf("  %s get <name>\n", os.Args[0])
 	fmt.Printf("  %s go <name>\n", os.Args[0])
-	fmt.Printf("  %s init {fish}\n", os.Args[0])
 	fmt.Printf("  %s help\n", os.Args[0])
+	fmt.Printf("  %s init {fish}\n", os.Args[0])
 	fmt.Printf("  %s list\n", os.Args[0])
 	fmt.Printf("  %s remove <name>\n", os.Args[0])
 }
