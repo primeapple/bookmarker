@@ -11,6 +11,7 @@ type Migrator func(map[string]any) (map[string]any, error)
 
 var migrations = map[int]Migrator{
 	0: MigrateV0toV1,
+	1: MigrateV1toV2,
 }
 
 func ParseBookmarksData(jsonData []byte) (*bookmarks.Bookmarks, error) {

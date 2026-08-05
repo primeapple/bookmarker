@@ -16,14 +16,37 @@ func TestParseBookmarksData(t *testing.T) {
 			"otherName": "otherPath"
 		}`)
 		want := bookmarks.Bookmarks{
-			Named: map[string]string{
-				"name":      "path",
-				"otherName": "otherPath",
+			Named: map[string][]string{
+				"name":      {"path"},
+				"otherName": {"otherPath"},
 			},
-			Unnamed: map[string]string{},
 		}
 
 		got, err := ParseBookmarksData(v0Data)
+
+		assertNil(t, err)
+		assertBookmarks(t, got, &want)
+	})
+
+	t.Run("migrate valid v1Data", func(t *testing.T) {
+		v1Data := []byte(`{
+			"_version":  1,
+			"bookmarks": {
+				"named": {
+					"name":      "path",
+					"otherName": "otherPath"
+				},
+				"unnamed": {}
+			}
+		}`)
+		want := bookmarks.Bookmarks{
+			Named: map[string][]string{
+				"name":      {"path"},
+				"otherName": {"otherPath"},
+			},
+		}
+
+		got, err := ParseBookmarksData(v1Data)
 
 		assertNil(t, err)
 		assertBookmarks(t, got, &want)
@@ -34,18 +57,17 @@ func TestParseBookmarksData(t *testing.T) {
 			"_version":  %d,
 			"bookmarks": {
 				"named": {
-					"name":      "path",
-					"otherName": "otherPath"
+					"name":      ["path"],
+					"otherName": ["otherPath", "secondPath"]
 				},
 				"unnamed": {}
 			}
 		}`, LATEST_VERSION)
 		want := bookmarks.Bookmarks{
-			Named: map[string]string{
-				"name":      "path",
-				"otherName": "otherPath",
+			Named: map[string][]string{
+				"name":      {"path"},
+				"otherName": {"otherPath", "secondPath"},
 			},
-			Unnamed: map[string]string{},
 		}
 
 		got, err := ParseBookmarksData(latestData)
@@ -55,15 +77,14 @@ func TestParseBookmarksData(t *testing.T) {
 	})
 
 	t.Run("abort on non existing version", func(t *testing.T) {
-		data := []byte(`{
-			"_version":  2,
+		data := fmt.Appendf(nil, `{
+			"_version":  %d,
 			"name":      "path",
 			"otherName": "otherPath"
-		}`)
+		}`, LATEST_VERSION+1)
 
 		_, err := ParseBookmarksData(data)
 
-		print(fmt.Printf("%v", err))
 		assertNotNil(t, err)
 	})
 

@@ -2,13 +2,12 @@ package storage
 
 import "github.com/primeapple/bookmarker/internal/bookmarks"
 
-const LATEST_VERSION = 1
+const LATEST_VERSION = 2
 
 type LatestSchema struct {
 	Version   int `json:"_version"`
 	Bookmarks struct {
-		Named   map[string]string `json:"named"`
-		Unnamed map[string]string `json:"unnamed"`
+		Named   map[string][]string `json:"named"`
 	} `json:"bookmarks"`
 }
 
@@ -17,13 +16,11 @@ func FromBookmarks(b *bookmarks.Bookmarks) *LatestSchema {
 		Version: LATEST_VERSION,
 	}
 	schema.Bookmarks.Named = b.Named
-	schema.Bookmarks.Unnamed = b.Unnamed
 	return schema
 }
 
 func (schema *LatestSchema) ToBookmarks() *bookmarks.Bookmarks {
 	return &bookmarks.Bookmarks{
 		Named:   schema.Bookmarks.Named,
-		Unnamed: schema.Bookmarks.Unnamed,
 	}
 }
