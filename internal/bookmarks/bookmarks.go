@@ -9,7 +9,7 @@ import (
 )
 
 type Bookmarks struct {
-	Named   map[string][]string
+	Named map[string][]string
 }
 
 var ErrBookmarkNotFound = errors.New("bookmark not found")
@@ -17,7 +17,7 @@ var ErrPathNotAttached = errors.New("path not attached to bookmark")
 
 func NewBookmarks() *Bookmarks {
 	return &Bookmarks{
-		Named:   map[string][]string{},
+		Named: map[string][]string{},
 	}
 }
 

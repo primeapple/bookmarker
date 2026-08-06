@@ -43,7 +43,7 @@ func TestMigrateV1toV2(t *testing.T) {
 		want := map[string]any{
 			"_version": 2,
 			"bookmarks": map[string]any{
-				"named":   map[string][]string{},
+				"named": map[string][]string{},
 			},
 		}
 

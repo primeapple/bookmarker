@@ -7,7 +7,7 @@ const LATEST_VERSION = 2
 type LatestSchema struct {
 	Version   int `json:"_version"`
 	Bookmarks struct {
-		Named   map[string][]string `json:"named"`
+		Named map[string][]string `json:"named"`
 	} `json:"bookmarks"`
 }
 
@@ -21,6 +21,6 @@ func FromBookmarks(b *bookmarks.Bookmarks) *LatestSchema {
 
 func (schema *LatestSchema) ToBookmarks() *bookmarks.Bookmarks {
 	return &bookmarks.Bookmarks{
-		Named:   schema.Bookmarks.Named,
+		Named: schema.Bookmarks.Named,
 	}
 }
