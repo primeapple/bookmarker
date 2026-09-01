@@ -166,3 +166,15 @@ func normalizePathSet(paths []string) []string {
 	slices.Sort(paths)
 	return slices.Compact(paths)
 }
+
+// PathType represents the type of a filesystem path
+type PathType string
+
+const (
+	FileType PathType = "file"
+	DirType  PathType = "dir"
+)
+
+func typeOf(path string) (PathType, error) {
+
+}
