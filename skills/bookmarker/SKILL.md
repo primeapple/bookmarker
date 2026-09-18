@@ -1,5 +1,5 @@
 ---
-name: go
+name: bookmarker
 description: >
   Use when the user refers to a non-exact directory, repository, or bookmark
   that is not the current relevant location, including an unfamiliar named
@@ -7,7 +7,7 @@ description: >
   directly, and ask the user if it is missing without trying `bm`.
 ---
 
-# Go
+# Bookmarker
 
 Use this skill for a non-exact location only. First decide whether the current
 working directory already fits the user's request. Stay there when it does.
